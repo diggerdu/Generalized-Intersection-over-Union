@@ -55,19 +55,16 @@ def bbox_overlaps(bboxes1, bboxes2, mode='iou', allow_neg=False):
     return ious
 
 def bbox_overlaps_giou(bboxes1, bboxes2):
-    """Calculate the ious between each bbox of bboxes1 and bboxes2.
+    """Calculate the gious between each bbox of bboxes1 and bboxes2.
 
     Args:
         bboxes1(ndarray): shape (n, 4)
         bboxes2(ndarray): shape (k, 4)
-        mode(str): iou (intersection over union) or iof (intersection
-            over foreground)
 
     Returns:
-        ious(ndarray): shape (n, k)
+        gious(ndarray): shape (n, k)
     """
 
-    assert mode in ['iou', 'iof']
 
     bboxes1 = bboxes1.astype(np.float32)
     bboxes2 = bboxes2.astype(np.float32)
