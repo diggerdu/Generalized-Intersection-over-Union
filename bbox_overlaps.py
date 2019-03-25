@@ -54,7 +54,7 @@ def bbox_overlaps(bboxes1, bboxes2, mode='iou', allow_neg=False):
         ious = ious.T
     return ious
 
-def bbox_overlaps_giou(bboxes1, bboxes2, mode='iou', allow_neg=False):
+def bbox_overlaps_giou(bboxes1, bboxes2):
     """Calculate the ious between each bbox of bboxes1 and bboxes2.
 
     Args:
@@ -87,23 +87,20 @@ def bbox_overlaps_giou(bboxes1, bboxes2, mode='iou', allow_neg=False):
         bboxes2[:, 3] - bboxes2[:, 1] + 1)
     for i in range(bboxes1.shape[0]):
         x_start = np.maximum(bboxes1[i, 0], bboxes2[:, 0])
+        x_min = np.minimum(bboxes1[i, 0], bboxes2[:, 0])
         y_start = np.maximum(bboxes1[i, 1], bboxes2[:, 1])
+        y_min = np.minimum(bboxes1[i, 1], bboxes2[:, 1])
         x_end = np.minimum(bboxes1[i, 2], bboxes2[:, 2])
+        x_max = np.maximum(bboxes1[i, 2], bboxes2[:, 2])
         y_end = np.minimum(bboxes1[i, 3], bboxes2[:, 3])
-        if not allow_neg:
-            overlap = np.maximum(x_end - x_start + 1, 0) * np.maximum(y_end - y_start + 1, 0)
-        else:
-            overlap = (x_end - x_start + 1) * (y_end - y_start + 1)
-            flag = np.ones(overlap.shape)
-            flag[x_end - x_start + 1 < 0] = -1.
-            flag[y_end - y_start + 1 < 0] = -1.
-            overlap = flag * np.abs(overlap)
+        y_max = np.maximum(bboxes1[i, 3], bboxes2[:, 3])
 
-        if mode == 'iou':
-            union = area1[i] + area2 - overlap
-        else:
-            union = area1[i] if not exchange else area2
-        ious[i, :] = overlap / union
+        overlap = np.maximum(x_end - x_start + 1, 0) * np.maximum(y_end - y_start + 1, 0)
+        closure = np.maximum(x_max - x_min + 1, 0) * np.maximum(y_max - y_min + 1, 0)
+
+        union = area1[i] + area2 - overlap
+        closure
+        ious[i, :] = overlap / union - (closure - overlap) / closure
     if exchange:
         ious = ious.T
     return ious
