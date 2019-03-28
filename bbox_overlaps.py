@@ -97,7 +97,7 @@ def bbox_overlaps_giou(bboxes1, bboxes2):
 
         union = area1[i] + area2 - overlap
         closure
-        ious[i, :] = overlap / union - (closure - overlap) / closure
+        ious[i, :] = overlap / union - (closure - union) / closure
     if exchange:
         ious = ious.T
     return ious
